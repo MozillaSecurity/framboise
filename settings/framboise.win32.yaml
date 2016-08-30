@@ -1,0 +1,37 @@
+default:
+  process_timeout: ~
+
+FilesystemLogger: &FilesystemLogger
+  path: C:\Users\Christoph Diehl\Desktop
+
+MongoDBLogger: &MongoDBLogger
+  database_host: localhost
+  database_port: 27017
+  database_name: framboise
+  collection_name: faults
+
+targets:
+  firefox:
+    plugin: firefox
+    setups:
+      default:
+        environment:
+        application: C:\firefox\firefox.exe
+        arguments: -no-remote -height 512 -width 512
+        preferences: settings\firefox\prefs.js
+        monitors: [[console, testcase, syzy]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
+  iexplorer:
+    plugin: iexplorer
+    setups:
+      default:
+        environment: ~
+        application: C:\Program Files\Internet Explorer\iexplore.exe
+        arguments: ~
+        websocket_port: 9999
+        monitors: [[websocket, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger

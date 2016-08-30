@@ -1,0 +1,57 @@
+default:
+  process_timeout: ~
+  monitors: [console, testcase]
+
+environment: &environment
+  ASAN_OPTIONS: &asan_options
+    strict_init_order: 1
+    strict_memcmp: 0
+    allow_user_poisoning: 1
+    check_malloc_usable_size: 0
+    alloc_dealloc_mismatch: 0
+    allocator_may_return_null: 1
+    detect_stack_use_after_return: 1
+    strip_path_prefix: ""
+    check_initialization_order: 1
+
+FilesystemLogger: &FilesystemLogger
+  path: /srv
+
+MongoDBLogger: &MongoDBLogger
+  database_host: localhost
+  database_port: 27017
+  database_name: framboise
+  collection_name: faults
+
+targets:
+  firefox:
+    plugin: firefox
+    setups:
+      default:
+        environment: *environment
+        application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/bin/firefox
+        arguments: -no-remote -height 512 -width 512
+        preferences: settings/firefox/prefs.js
+        monitors: [[console, asan, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
+      inbound64-release:
+        environment: *environment
+        application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/bin/firefox
+        arguments: -no-remote -height 512 -width 512
+        preferences: settings/firefox/prefs.js
+        monitors: [[console, asan, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
+      inbound64-debug:
+        environment:
+          <<: *environment
+        application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-debug/dist/bin/firefox
+        arguments: -no-remote -height 512 -width 512
+        preferences: settings/firefox/prefs.js
+        monitors: [[console, asan, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger

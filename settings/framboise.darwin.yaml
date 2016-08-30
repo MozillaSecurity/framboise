@@ -1,0 +1,114 @@
+default:
+  process_timeout: ~
+  monitors: [console, testcase]
+
+environment: &environment
+  ASAN_OPTIONS: &asan_options
+    strict_init_order: 1
+    strict_memcmp: 0
+    allow_user_poisoning: 1
+    check_malloc_usable_size: 0
+    alloc_dealloc_mismatch: 0
+    allocator_may_return_null: 1
+    detect_stack_use_after_return: 1
+    strip_path_prefix: ""
+    check_initialization_order: 1
+
+FilesystemLogger: &FilesystemLogger
+  path: /srv
+
+MongoDBLogger: &MongoDBLogger
+  database_host: localhost
+  database_port: 27017
+  database_name: framboise
+  collection_name: faults
+
+targets:
+  firefox:
+    plugin: firefox
+    setups:
+      default:
+        environment: *environment
+        application: /srv/repos/mozilla/mozilla-inbound/obj-ff64-asan-opt-nodebug/dist/Nightly.app/Contents/MacOS/firefox
+        arguments: -no-remote -width 512 -height 512
+        preferences: settings/firefox/prefs.js
+        monitors: [[console, asan, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
+      inbound64-debug:
+        environment:
+          <<: *environment
+          <<: {DYLD_LIBRARY_PATH: /srv/repos/mozilla/mozilla-inbound/ff64-asan-debug/dist/Nightly.app/Contents/MacOS}
+        application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-debug/dist/Nightly.app/Contents/MacOS/firefox
+        arguments: -no-remote -height 512 -width 512
+        preferences: settings/firefox/prefs.js
+        monitors: [[console, asan, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
+      inbound64-release:
+        environment:
+          <<: *environment
+          <<: {DYLD_LIBRARY_PATH: /srv/repos/mozilla/mozilla-inbound/obj-ff64-asan-opt-nodebug/dist/Nightly.app/Contents/MacOS/}
+        application: /srv/repos/mozilla/mozilla-inbound/obj-ff64-asan-opt-nodebug/dist/Nightly.app/Contents/MacOS/firefox
+        arguments: -no-remote -height 512 -width 512
+        preferences: settings/firefox/prefs.js
+        monitors: [[console, asan, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
+  safari:
+    plugin: safari
+    setups:
+      default:
+        environment: *environment
+        application: /Applications/Safari.app/Contents/MacOS/Safari
+        arguments:
+        websocket_port: 9999
+        monitors: [[websocket, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
+  chromium:
+    plugin: chromium
+    setups:
+      default:
+        environment:
+          <<: *environment
+          ASAN_OPTIONS:
+            <<: *asan_options
+            <<: {replace_intrin: 0}
+        application: /var/folders/c_/34cdl_d15lb0nl2_kpqklzjw0000gn/T/chromium-browser-asan/mac-release/asan-mac-release-383194/Chromium.app/Contents/MacOS/Chromium
+        arguments: [
+          "--enable-logging=stderr",
+          "--log-level=0",
+          "--js-flags='--expose_gc'",
+          "--allow-file-access-from-files",
+          "--user-data-dir=/tmp/chromium",
+          "--window-size=512,512",
+          "--disable-popup-blocking",
+          "--ignore-certificate-errors",
+          "--enable-experimental-canvas-features",
+          "--enable-web-midi",
+          "--enable-spdy4a2",
+          "--enable-opus-playback",
+          "--enable-vp8-alpha-playback",
+          "--enable-experimental-web-platform-features",
+          "--enable-deferred-image-decoding",
+          "--enable-usermedia-screen-capture",
+          "--enable-webgl-draft-extensions",
+          "--enable-video-track",
+          "--single-process",
+          #"--no-sandbox",
+          #"--disable-seccomp-filter-sandbox",
+          #"--disable-seccomp-sandbox",
+          "--crash-on-hang-seconds=60",
+          "--crash-on-hang-threads=60",
+          "--enable-unsafe-es3-apis"
+        ]
+        websocket_port: 9999
+        monitors: [[console, asan], [websocket, testcase]]
+        buckets:
+          FilesystemLogger:
+            <<: *FilesystemLogger
