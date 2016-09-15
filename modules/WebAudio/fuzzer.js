@@ -46,8 +46,7 @@ var fuzzerWebAudio = (function() {
   var makeBufferLength = [function() {
     return Random.choose([
       [30, Make.tinyNumber],
-      [ 1, Random.number(65535)],
-      [ 1, 0]
+      [ 5, Random.number(65535)],
     ]);
   }];
 
@@ -99,7 +98,10 @@ var fuzzerWebAudio = (function() {
       ];
     }
 
-    return o.add("AudioContext") + " = new " + audioContextMethod + JS.methodHead(audioContextParams) + ";";
+    if (isOfflineContext)
+      return o.add("AudioContext") + " = new " + audioContextMethod + JS.methodHead(audioContextParams) + ";";
+    else
+      return o.add("AudioContext") + " = new " + audioContextMethod + "();";
   }
 
   /* Node constructors in AudioContext */
