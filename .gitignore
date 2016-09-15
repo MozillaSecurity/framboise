@@ -64,3 +64,14 @@ target/
 # Platform
 .DS_Store
 
+# Private
+modules/JavaScriptCrypto/
+modules/MediaRecorder/
+modules/MediaSource/
+modules/TextTrack/
+modules/WebGL/
+modules/WebGL2/
+modules/WebGLSL/
+modules/WebMidi/
+modules/WebRTC/
+modules/WebSpeech/
