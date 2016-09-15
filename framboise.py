@@ -407,7 +407,7 @@ class FirefoxPlugin(ExternalProcess):
         shutil.copyfile(preferences,
                         os.path.join(self.profile_folder, 'user.js'))
 
-        cmd = [application, '-no-remote', '-P', profile_name]
+        cmd = [application, '-P', profile_name]
         cmd.extend(arguments.split())
         cmd.append(self.target)
         self.process = self.open(cmd, self.setup_environ(environment))
