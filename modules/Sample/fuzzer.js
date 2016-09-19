@@ -42,11 +42,11 @@ var fuzzerXyz = (function() {
   /*
   ** Methods and attributes.
   */
-  var AnimatableMethods = {
+  var ObjectMethods = {
     "name": []
   };
 
-  var AnimationAttributes = {
+  var ObjectAttributes = {
     "name": function() { },
   };
 
