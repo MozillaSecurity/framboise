@@ -166,6 +166,9 @@ user_pref("dom.archivereader.enabled", true);
 // IndexDB
 user_pref("dom.indexedDB.experimental", true);
 
+// FlyWeb
+user_pref("dom.flyweb.enabled", true);
+user_pref("gecko.handlerService.allowRegisterFromDifferentHost", true);
 
 //
 // Behaviour Settings
