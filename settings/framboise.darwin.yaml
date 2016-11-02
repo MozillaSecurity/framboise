@@ -4,15 +4,26 @@ default:
 
 environment: &environment
   ASAN_OPTIONS: &asan_options
+    debug: 1
     strict_init_order: 1
-    strict_memcmp: 0
+    strict_memcmp: 1
     allow_user_poisoning: 1
     check_malloc_usable_size: 0
     alloc_dealloc_mismatch: 0
     allocator_may_return_null: 1
-    detect_stack_use_after_return: 1
+    detect_stack_use_after_return: 0
+    detect_stack_use_after_scope: 1
     strip_path_prefix: ""
     check_initialization_order: 1
+    detect_invalid_pointer_pairs: 1
+    start_deactivated: 1
+    allow_addr2line: 1
+    handle_ioctl: 1
+    detect_deadlocks: 1
+    intercept_tls_get_addr: 1
+    strict_string_checks: 1
+    print_cmdline: 1
+
 
 FilesystemLogger: &FilesystemLogger
   path: /srv
@@ -28,8 +39,10 @@ targets:
     plugin: firefox
     setups:
       default:
-        environment: *environment
-        application: /srv/repos/mozilla/mozilla-inbound/obj-ff64-asan-opt-nodebug/dist/Nightly.app/Contents/MacOS/firefox
+        environment:
+          <<: *environment
+          <<: {DYLD_LIBRARY_PATH: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/}
+        application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/firefox
         arguments: -no-remote -width 512 -height 512
         preferences: settings/firefox/prefs.js
         monitors: [[console, asan, testcase]]
@@ -40,7 +53,7 @@ targets:
         environment:
           <<: *environment
           <<: {DYLD_LIBRARY_PATH: /srv/repos/mozilla/mozilla-inbound/ff64-asan-debug/dist/Nightly.app/Contents/MacOS}
-        application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-debug/dist/Nightly.app/Contents/MacOS/firefox
+        application: /srv/repos/mozilla/mozilla-inbound/obj-ff64-asan-debug/dist/Nightly.app/Contents/MacOS/firefox
         arguments: -no-remote -height 512 -width 512
         preferences: settings/firefox/prefs.js
         monitors: [[console, asan, testcase]]
@@ -50,8 +63,8 @@ targets:
       inbound64-release:
         environment:
           <<: *environment
-          <<: {DYLD_LIBRARY_PATH: /srv/repos/mozilla/mozilla-inbound/obj-ff64-asan-opt-nodebug/dist/Nightly.app/Contents/MacOS/}
-        application: /srv/repos/mozilla/mozilla-inbound/obj-ff64-asan-opt-nodebug/dist/Nightly.app/Contents/MacOS/firefox
+          <<: {DYLD_LIBRARY_PATH: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/}
+        application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/firefox
         arguments: -no-remote -height 512 -width 512
         preferences: settings/firefox/prefs.js
         monitors: [[console, asan, testcase]]
@@ -79,7 +92,7 @@ targets:
           ASAN_OPTIONS:
             <<: *asan_options
             <<: {replace_intrin: 0}
-        application: /var/folders/c_/34cdl_d15lb0nl2_kpqklzjw0000gn/T/chromium-browser-asan/mac-release/asan-mac-release-383194/Chromium.app/Contents/MacOS/Chromium
+        application: /var/folders/8p/t3zt6q_50lq21msj8ffpln6w0000gn/T/chromium-browser-asan/mac-release/asan-mac-release-418789/Chromium.app/Contents/MacOS/Chromium
         arguments: [
           "--enable-logging=stderr",
           "--log-level=0",
