@@ -21,7 +21,7 @@ environment: &environment
     handle_ioctl: 1
     detect_deadlocks: 1
     intercept_tls_get_addr: 1
-    strict_string_checks: 1
+    strict_string_checks: 0
     print_cmdline: 1
 
 FilesystemLogger: &FilesystemLogger
