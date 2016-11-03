@@ -344,8 +344,7 @@ class ExternalProcess(BasePlugin):
             return env
         for key, val in context.items():
             if isinstance(val, dict):
-                env[key] = ' '.join(
-                    '{!s}={!r}'.format(k, v) for (k, v) in val.items())
+                env[key] = ' '.join('{!s}={!r}'.format(k, v) for (k, v) in val.items())
             else:
                 env[key] = val
         return env
@@ -404,8 +403,7 @@ class FirefoxPlugin(ExternalProcess):
             '{} {}'.format(profile_name, self.profile_folder)
         ]
         self.call(cmd, self.setup_environ(environment))
-        shutil.copyfile(preferences,
-                        os.path.join(self.profile_folder, 'user.js'))
+        shutil.copyfile(preferences, os.path.join(self.profile_folder, 'user.js'))
 
         cmd = [application, '-P', profile_name]
         cmd.extend(arguments.split())
@@ -486,6 +484,61 @@ class Logger(object):
         pass
 
 
+class FuzzManagerLogger(Logger):
+    """
+    Bucket class to send crash information to FuzzManager
+    """
+
+    def __init__(self, **kwargs):
+        super(FuzzManagerLogger, self).__init__()
+        self.__dict__.update(kwargs)
+
+    def add_fault(self):
+        testcase = crashdata = ""
+        logdir = tempfile.TemporaryDirectory()
+
+        for name, meta in self.bucket.items():
+            if not 'data' in meta or not meta['data']:
+                logging.error('Bucket "{}" does not contain "data" field or field is empty.'.format(name))
+                continue
+            if not 'name' in meta or not meta['name']:
+                logging.error('Bucket "{}" does not contain "name" field or field is empty.'.format(name))
+                continue
+
+            filename = os.path.join(logdir.name, meta['name'])
+
+            try:
+                with open(filename, 'wb') as fo:
+                    fo.write(meta['data'].encode('UTF-8'))
+            except IOError as e:
+                logging.exception(e)
+
+            if "testcase.txt" in filename:
+                testcase = filename
+            if "crashlog.txt" in filename:
+                crashdata = filename
+
+        command = [
+            "python", self.collector_script,
+            "--tool", "framboise",
+            "--submit",
+            "--binary", self.binary]
+
+        if crashdata:
+            command += ["--crashdata", crashdata]
+        if testcase:
+            command += ["--testcase", testcase]
+
+        print("Sending to FuzzManager: {}".format(command))
+
+        try:
+            subprocess.call(command)
+        except Exception as e:
+            logging.exception(e)
+        else:
+            logdir.cleanup()
+
+
 class FilesystemLogger(Logger):
     """
     Bucket class to save crash information to disk.
@@ -513,12 +566,10 @@ class FilesystemLogger(Logger):
             return
         for name, meta in self.bucket.items():
             if not 'data' in meta or not meta['data']:
-                logging.error('Bucket "{}" does not contain "data" field or '
-                              'field is empty.'.format(name))
+                logging.error('Bucket "{}" does not contain "data" field or field is empty.'.format(name))
                 continue
             if not 'name' in meta or not meta['name']:
-                logging.error('Bucket "{}" does not contain "name" field or '
-                              'field is empty.'.format(name))
+                logging.error('Bucket "{}" does not contain "name" field or field is empty.'.format(name))
                 continue
             filename = os.path.join(faultpath, meta['name'])
             try:
@@ -620,8 +671,7 @@ class Framboise(object):
 
         self.runner.plugin.wait(self.config['default']['process_timeout'])
 
-        logging.info('Exit code: {}'
-                     .format(self.runner.plugin.process.returncode))
+        logging.info('Exit code: {}'.format(self.runner.plugin.process.returncode))
 
         if self.runner.plugin.process.returncode != 0:
             self._check_for_faults()
@@ -668,12 +718,9 @@ class Framboise(object):
             listeners = monitor_set[1:]
             assert listeners
             if root == 'console':
-                monitor = ConsoleMonitor(process=self.runner.plugin.process,
-                                         verbose=self.verbose)
+                monitor = ConsoleMonitor(process=self.runner.plugin.process, verbose=self.verbose)
             elif root == 'websocket':
-                monitor = WebSocketMonitor(
-                    addr_port=('', config['websocket_port']),
-                    verbose=self.verbose)
+                monitor = WebSocketMonitor(addr_port=('', config['websocket_port']), verbose=self.verbose)
             else:
                 raise Exception('Unknown monitor type: {}'.format(root))
             for l in listeners:
@@ -754,61 +801,46 @@ if __name__ == '__main__':
     #
     parser.add_argument('-fuzzer', dest='fuzzer', metavar='list',
                         help='syntax: weighting:module [,...]')
-    parser.add_argument('-target', dest='target', metavar='name',
-                        default='firefox',
+    parser.add_argument('-target', dest='target', metavar='name', default='firefox',
                         help='target application')
-    parser.add_argument('-setup', dest='setup',  metavar='name',
-                        default='default',
+    parser.add_argument('-setup', dest='setup',  metavar='name', default='default',
                         help='target environment')
-    parser.add_argument('-worker', dest='worker', metavar='#',
-                        type=int, default=1,
+    parser.add_argument('-worker', dest='worker', metavar='#', type=int, default=1,
                         help='number of worker instances')
     parser.add_argument('-testcase', dest='testcase', metavar='file',
                         help='open target app with provided testcase')
-    parser.add_argument('-launch', dest='launch',
-                        action='store_true', default=False,
+    parser.add_argument('-launch', dest='launch', action='store_true', default=False,
                         help='launch the target app only')
-    parser.add_argument('-restart', dest='restart',
-                        action='store_true', default=False,
+    parser.add_argument('-restart', dest='restart', action='store_true', default=False,
                         help='restart crashed worker')
-    parser.add_argument('-timeout', dest='timeout', metavar='#',
-                        type=int, default=0,
+    parser.add_argument('-timeout', dest='timeout', metavar='#', type=int, default=0,
                         help='timeout for reload')
-    parser.add_argument('-websocket-port', dest='ws_port', metavar='#',
-                        type=int,
+    parser.add_argument('-websocket-port', dest='ws_port', metavar='#', type=int,
                         help='WebSocket monitor port')
     parser.add_argument('-update', dest='update', metavar='name',
                         help='run update script for target')
-    parser.add_argument('-list', dest='list_modules',
-                        action='store_true', default=False,
+    parser.add_argument('-list', dest='list_modules', action='store_true', default=False,
                         help='show a list of available modules')
     parser.add_argument('-settings', dest='settings', metavar='file',
-                        default='settings/framboise.{}.yaml'
-                        .format(sys.platform),
+                        default='settings/framboise.{}.yaml'.format(sys.platform),
                         help='custom settings file')
     #
     # Flags: Fuzzers
     #
-    parser.add_argument('-debug', dest='debug',
-                        action='store_true', default=False,
+    parser.add_argument('-debug', dest='debug', action='store_true', default=False,
                         help='print out JS errors')
-    parser.add_argument('-max-commands', dest='max_commands', metavar='#',
-                        type=int, default=100,
+    parser.add_argument('-max-commands', dest='max_commands', metavar='#', type=int, default=100,
                         help='maximum amount of commands')
-    parser.add_argument('-random-seed', dest='random_seed', metavar='#',
-                        default=None, help='seed used for the PRNG')
-    parser.add_argument('-with-set-timeout', dest='with_set_timeout',
-                        action='store_true', default=False,
+    parser.add_argument('-random-seed', dest='random_seed', metavar='#', default=None,
+                        help='seed used for the PRNG')
+    parser.add_argument('-with-set-timeout', dest='with_set_timeout', action='store_true', default=False,
                         help='make use of setTimeout()')
-    parser.add_argument('-with-set-interval', dest='with_set_interval',
-                        action='store_true', default=False,
+    parser.add_argument('-with-set-interval', dest='with_set_interval', action='store_true', default=False,
                         help='make use of setInterval()')
-    parser.add_argument('-with-events', dest='with_events',
-                        action='store_true', default=False,
+    parser.add_argument('-with-events', dest='with_events', action='store_true', default=False,
                         help='make use of addEventListener()')
 
-    parser.add_argument('-version', action='version',
-                        version='%(prog)s {}'.format(VERSION))
+    parser.add_argument('-version', action='version', version='%(prog)s {}'.format(VERSION))
 
     args = parser.parse_args()
 
