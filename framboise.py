@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -762,13 +762,11 @@ def main(args):
         sys.exit(1)
 
     if args.target not in framboise.config.get('targets'):
-        logging.error('"{}" is not defined in "{}".'.format(
-            args.target, args.settings))
+        logging.error('"{}" is not defined in "{}".'.format(args.target, args.settings))
         sys.exit(1)
 
     if args.setup not in framboise.config['targets'][args.target]['setups']:
-        logging.error('Setup "{}" is not defined in target "{}"'.format(
-            args.setup, args.target))
+        logging.error('Setup "{}" is not defined in target "{}"'.format(args.setup, args.target))
         sys.exit(1)
 
     fuzzer = framboise.set_fuzzer(args)
