@@ -66,3 +66,6 @@ target/
 
 # Private
 modules/Private
+settings/fxos
+settings/firefox
+settings/iexplorer
