@@ -24,6 +24,6 @@ if __name__ == "__main__":
 
     download('https://raw.githubusercontent.com/mozillasecurity/fuzzdata/master/settings/firefox/prefs.js', 'settings/firefox/')
     download('https://raw.githubusercontent.com/MozillaSecurity/fuzzdata/master/settings/fxos/user.js', 'settings/fxos/')
-    download('https://raw.githubusercontent.com/MozillaSecurity/fuzzdata/master/settings/iexplorer/enable-active-content.reg', 'settings/iexplorer')
+    download('https://raw.githubusercontent.com/MozillaSecurity/fuzzdata/master/settings/iexplorer/enable-active-content.reg', 'settings/iexplorer/')
 
     install("PyYAML==3.12")
