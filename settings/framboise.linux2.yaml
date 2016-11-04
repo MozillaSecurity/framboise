@@ -24,15 +24,11 @@ environment: &environment
     strict_string_checks: 1
     print_cmdline: 1
 
-
 FilesystemLogger: &FilesystemLogger
-  path: /srv
+  path: /srv/logs/framboise
 
-MongoDBLogger: &MongoDBLogger
-  database_host: localhost
-  database_port: 27017
-  database_name: framboise
-  collection_name: faults
+FuzzManagerLogger: &FuzzManagerLogger
+  collector_script: ../fuzzmanager/Collector/Collector.py
 
 targets:
   firefox:
@@ -47,6 +43,9 @@ targets:
         buckets:
           FilesystemLogger:
             <<: *FilesystemLogger
+          FuzzManagerLogger:
+            <<: *FuzzManagerLogger
+            <<: {binary: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/firefox}
       inbound64-release:
         environment: *environment
         application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/bin/firefox

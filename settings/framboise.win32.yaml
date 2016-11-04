@@ -2,13 +2,10 @@ default:
   process_timeout: ~
 
 FilesystemLogger: &FilesystemLogger
-  path: C:\Users\Christoph Diehl\Desktop
+  path: C:\framboise\
 
-MongoDBLogger: &MongoDBLogger
-  database_host: localhost
-  database_port: 27017
-  database_name: framboise
-  collection_name: faults
+FuzzManagerLogger: &FuzzManagerLogger
+  collector_script: ../fuzzmanager/Collector/Collector.py
 
 targets:
   firefox:
@@ -35,3 +32,6 @@ targets:
         buckets:
           FilesystemLogger:
             <<: *FilesystemLogger
+          FuzzManagerLogger:
+            <<: *FuzzManagerLogger
+            <<: {binary: C:\Program Files\Internet Explorer\iexplore.exe}

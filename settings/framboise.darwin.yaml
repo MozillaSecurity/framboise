@@ -24,15 +24,11 @@ environment: &environment
     strict_string_checks: 1
     print_cmdline: 1
 
-
 FilesystemLogger: &FilesystemLogger
-  path: /srv
+  path: /srv/logs/framboise
 
-MongoDBLogger: &MongoDBLogger
-  database_host: localhost
-  database_port: 27017
-  database_name: framboise
-  collection_name: faults
+FuzzManagerLogger: &FuzzManagerLogger
+  collector_script: ../fuzzmanager/Collector/Collector.py
 
 targets:
   firefox:
@@ -41,7 +37,6 @@ targets:
       default:
         environment:
           <<: *environment
-          <<: {DYLD_LIBRARY_PATH: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/}
         application: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/firefox
         arguments: -no-remote -width 512 -height 512
         preferences: settings/firefox/prefs.js
@@ -49,6 +44,9 @@ targets:
         buckets:
           FilesystemLogger:
             <<: *FilesystemLogger
+          FuzzManagerLogger:
+            <<: *FuzzManagerLogger
+            <<: {binary: /srv/repos/mozilla/mozilla-inbound/ff64-asan-release/dist/Nightly.app/Contents/MacOS/firefox}
       inbound64-debug:
         environment:
           <<: *environment
@@ -60,6 +58,8 @@ targets:
         buckets:
           FilesystemLogger:
             <<: *FilesystemLogger
+          FuzzManagerLogger:
+            <<: *FuzzManagerLogger
       inbound64-release:
         environment:
           <<: *environment
@@ -71,6 +71,8 @@ targets:
         buckets:
           FilesystemLogger:
             <<: *FilesystemLogger
+          FuzzManagerLogger:
+            <<: *FuzzManagerLogger
   safari:
     plugin: safari
     setups:
