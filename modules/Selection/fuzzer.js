@@ -15,6 +15,13 @@ var fuzzerSelection = (function() {
   {
     var cmd = [];
 
+    // Create dummy object for selected text.
+    cmd.push(o.add("HTMLInputElement") + ' = document.createElement("input");');
+    cmd.push(o.pick("HTMLInputElement") + '.setAttribute("value", ' + Make.quotedString() + ');');
+    cmd.push(JS.addElementToBody(o.pick("HTMLInputElement")));
+    cmd.push('document.querySelector("input").select();');
+
+    // Create Selection object.
     cmd.push(o.add("Selection") + " = window.getSelection();");
     cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(0);");
 
@@ -27,16 +34,19 @@ var fuzzerSelection = (function() {
   */
   function makeCommand()
   {
-    var cmd = [], choice = Random.range(0, 5);
+    var cmd = [], choice = Random.range(0, 8);
 
     cmd.push(JS.methodCall(o.pick("Selection"), SelectionMethods));
 
     if (choice === 0) {
       cmd.push(JS.setAttribute(o.pick("Selection"), SelectionAttributes));
     }
-    if (choice === 5) {
-      cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(" + Make.number() + ");");
+
+    // Pickup new objects.
+    if (choice === 4) {
+      cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(" + getRangeNumber() + ");");
     }
+
 
     return cmd;
   }
@@ -48,7 +58,6 @@ var fuzzerSelection = (function() {
   function onFinish()
   {
     var cmd = [];
-
     return cmd;
   }
 
@@ -58,15 +67,19 @@ var fuzzerSelection = (function() {
   }
 
   function getOffset() {
-    return o.pick("Selection") + "." +  Random.pick(["anchorOffset", "focusOffset"]);
+    return o.pick("Selection") + "." + Random.pick(["anchorOffset", "focusOffset"]);
   }
 
-  var alter = function() { return Random.pick(["move", "extend"]); };
-  var direction = function() { return Random.pick(["forward", "backward"]); }
-  var granularity = function() { return Random.pick([
-    "character", "word", "sentence", "line", "paragraph", "lineboundary",
-    "sentenceboundary", "paragraphboundary", "documentboundary"]);
+  function getRangeNumber() {
+    return Random.pick([0, Make.number]);
   }
+
+  var alter = function() { return JSON.stringify(Random.pick(["move", "extend"])); };
+  var direction = function() { return  JSON.stringify(Random.pick(["forward", "backward"])); };
+  var granularity = function() { return  JSON.stringify(Random.pick([
+    "character", "word", "sentence", "line", "paragraph", "lineboundary",
+    "sentenceboundary", "paragraphboundary", "documentboundary"]));
+  };
 
   /*
   ** Methods and attributes.
@@ -78,7 +91,7 @@ var fuzzerSelection = (function() {
     "extend": [getNode, [getOffset, Make.number]],
     "selectAllChildren": [getNode],
     "deleteFromDocument": [],
-    "getRangeAt": [Make.number],
+    "getRangeAt": [getRangeNumber],
     "addRange": [function() { return o.pick("Range"); }],
     "removeRange": [function() { return o.pick("Range"); }],
     "removeAllRanges": [],
