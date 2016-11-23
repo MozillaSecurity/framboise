@@ -27,11 +27,14 @@ var fuzzerSelection = (function() {
   */
   function makeCommand()
   {
-    var cmd = [];
+    var cmd = [], choice = Random.range(0, 5);
 
-    cmd.push(o.pick("Selection") + ".");
+    cmd.push(JS.methodCall(o.pick("Selection"), SelectionMethods));
 
-    if (Random.number(10) === 0) {
+    if (choice === 0) {
+      cmd.push(JS.setAttribute(o.pick("Selection"), SelectionAttributes));
+    }
+    if (choice === 5) {
       cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(" + Make.number() + ");");
     }
 
@@ -55,7 +58,7 @@ var fuzzerSelection = (function() {
   }
 
   function getOffset() {
-    return o.pick("Selection") + "." +  Random.pick(["anchorOffset", "focusOffset", Make.number]);
+    return o.pick("Selection") + "." +  Random.pick(["anchorOffset", "focusOffset"]);
   }
 
   var alter = function() { return Random.pick(["move", "extend"]); };
@@ -69,10 +72,10 @@ var fuzzerSelection = (function() {
   ** Methods and attributes.
   */
   var SelectionMethods = {
-    "collapse": [getNode, getOffset],
+    "collapse": [getNode, [getOffset, Make.number]],
     "collapseToStart": [],
     "collapseToEnd": [],
-    "extend": [getNode, getOffset],
+    "extend": [getNode, [getOffset, Make.number]],
     "selectAllChildren": [getNode],
     "deleteFromDocument": [],
     "getRangeAt": [Make.number],
