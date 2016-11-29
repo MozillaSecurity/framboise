@@ -22,7 +22,7 @@ var fuzzerSelection = (function() {
     cmd.push('document.querySelector("input").select();');
 
     // Create Selection object.
-    cmd.push(o.add("Selection") + " = window.getSelection();");
+    cmd.push(o.add("Selection") + " = document.getSelection();");
     cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(0);");
 
     return cmd;
@@ -63,22 +63,39 @@ var fuzzerSelection = (function() {
 
   // Common Parameters
   function getNode() {
-    return o.pick("Selection") + "." + Random.pick(["anchorNode", "focusNode"]);
+    return o.pick("Selection") + "." + Random.pick([
+      "anchorNode",
+      "focusNode"]);
   }
 
   function getOffset() {
-    return o.pick("Selection") + "." + Random.pick(["anchorOffset", "focusOffset"]);
+    return o.pick("Selection") + "." + Random.pick([
+      "anchorOffset",
+      "focusOffset"]);
   }
 
   function getRangeNumber() {
     return Random.pick([0, Make.number]);
   }
 
-  var alter = function() { return JSON.stringify(Random.pick(["move", "extend"])); };
-  var direction = function() { return  JSON.stringify(Random.pick(["forward", "backward"])); };
+  var alter = function() { return JSON.stringify(Random.pick([
+    "move",
+    "extend"]));
+  };
+  var direction = function() { return  JSON.stringify(Random.pick([
+    "forward",
+    "backward"]));
+  };
   var granularity = function() { return  JSON.stringify(Random.pick([
-    "character", "word", "sentence", "line", "paragraph", "lineboundary",
-    "sentenceboundary", "paragraphboundary", "documentboundary"]));
+    "character",
+    "word",
+    "sentence",
+    "line",
+    "paragraph",
+    "lineboundary",
+    "sentenceboundary",
+    "paragraphboundary",
+    "documentboundary"]));
   };
 
   /*
