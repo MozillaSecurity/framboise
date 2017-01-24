@@ -17,10 +17,7 @@ Framboise
 ---
 
 
-    Download: https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
-    python ez_setup.py
-
-    Download: https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+    Download: https://bootstrap.pypa.io/get-pip.py
     python get-pip.py
 
     ./setup.py
