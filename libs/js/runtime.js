@@ -251,6 +251,13 @@ Engine.prototype.makeCommands = function (fuzzers) {
                 this.fuzz(o.pick(objName) + ".addEventListener" + JS.methodHead(params));
               }
             }
+            if (this.prefs.commands.events && "WindowEvents" in fuzzer) {
+              var evtName = Random.pick(fuzzer.WindowEvents);
+              var evtCmds = this.makeSubCommands(fuzzers);
+              var callback = "function(e) { " + evtCmds + "}";
+              var params = [Utils.quote(evtName), callback];
+              this.fuzz("window.addEventListener" + JS.methodHead(params));
+            }
             break;
           default:
             this.fuzz(cmd);
@@ -269,7 +276,7 @@ Engine.prototype.fuzz = function (cmd) {
 };
 
 Engine.prototype.onFinish = function (fuzzers) {
-  var i, j, cmds, cmd;
+  var i, j, cmds;
   for (i = 0; i < fuzzers.length; i++) {
     cmds = fuzzers[i][1].onFinish();
     cmds = typeof(cmds) == "string" ? [cmds] : cmds;
