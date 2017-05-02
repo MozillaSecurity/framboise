@@ -427,5 +427,9 @@ var Make = {
     'vatu', 'vert', 'vhal', 'vjmo', 'vkna', 'vkrn', 'vpal', 'vrt2', 'zero'
   ],
   assignmentOperator: ["=", "-=", "+=", "*=", "/="],
-  arithmeticOperator: ["%", "-", "+", "*", "/"]
+  arithmeticOperator: ["%", "-", "+", "*", "/"],
+  currency: [ // https://en.wikipedia.org/wiki/ISO_4217
+      "USD", "USS", "USN", "EUR", "CHF", "GBP", "XAG", "XBA", "XBB", "XBC",
+      "XBD", "XSU", "XTS", "XXX",
+  ]
 };
