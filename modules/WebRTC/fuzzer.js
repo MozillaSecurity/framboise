@@ -548,7 +548,7 @@ var fuzzerWebRTC = (function() {
     "rtx": JSON.stringify(RtxParameters),
     "fec": JSON.stringify(FecParameters),
     "active": Make.bool,
-    priority: Random.pick(PriorityType),
+    "priority": Random.pick(PriorityType),
     "maxBitrate": Make.number,
     "degradationPreference": Random.pick(DegradationPreference),
     "rid": "foobar",
