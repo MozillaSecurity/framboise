@@ -2,7 +2,7 @@ FROM posidron/fuzzos:latest
 
 LABEL maintainer Christoph Diehl <cdiehl@mozilla.com>
 
-COPY . framboise
+COPY framboise/ framboise
 
 USER root
 RUN \
