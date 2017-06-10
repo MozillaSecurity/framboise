@@ -16,6 +16,7 @@
  * Run: ./framboise.py -fuzzer 1:WebAnimations -setup inbound64-release -debug -with-set-timeout -with-set-interval
  *
 **/
+
 var fuzzerWebAnimations = (function() {
   /*
   ** Initialization
@@ -23,17 +24,17 @@ var fuzzerWebAnimations = (function() {
   */
   function onInit()
   {
-    var cmd = [];
+    let cmd = []
 
     if (!o.has("Animatable")) {
-      cmd.push(o.add("Animatable") + " = document.createElement('div');");
-      cmd.push(o.pick("Animatable") + ".setAttribute('class', 'box');");
-      cmd.push(o.pick("Animatable") + ".setAttribute('id', 'box');");
-      cmd.push(o.pick("Animatable") + ".setAttribute('style', 'width:200px;height:200px;background:rgba(0,0,255,0.5);');");
-      cmd.push(JS.addElementToBody(o.pick("Animatable")));
+      cmd.push(o.add("Animatable") + " = document.createElement('div');")
+      cmd.push(o.pick("Animatable") + ".setAttribute('class', 'box');")
+      cmd.push(o.pick("Animatable") + ".setAttribute('id', 'box');")
+      cmd.push(o.pick("Animatable") + ".setAttribute('style', 'width:200px;height:200px;background:rgba(0,0,255,0.5);');")
+      cmd.push(utils.script.addElementToBody(o.pick("Animatable")))
     }
 
-    return cmd;
+    return cmd
   }
 
   /*
@@ -42,19 +43,20 @@ var fuzzerWebAnimations = (function() {
   */
   function makeCommand()
   {
-    var choice = Random.range(0, 5), cmd = [];
+    let cmd = []
+    let choice = random.range(0, 5)
 
-    cmd.push(o.add("Animation") + " = " + o.pick("Animatable") + ".animate(" + MakeFrames() + ', ' + MakeKeyframeAnimationOptions() + ");");
+    cmd.push(o.add("Animation") + " = " + o.pick("Animatable") + ".animate(" + MakeFrames() + ', ' + MakeKeyframeAnimationOptions() + ");")
 
-    if (choice == 0 && o.has("Animatable")) {
-      cmd.push(JS.methodCall(o.pick("Animatable"), AnimatableMethods));
+    if (choice === 0 && o.has("Animatable")) {
+      cmd.push(utils.script.methodCall(o.pick("Animatable"), AnimatableMethods))
     }
 
-    if (choice == 1 && o.has("Animation")) {
-      cmd.push(JS.setAttribute(o.pick("Animation"), AnimationAttributes));
+    if (choice === 1 && o.has("Animation")) {
+      cmd.push(utils.script.setAttribute(o.pick("Animation"), AnimationAttributes))
     }
 
-    return cmd;
+    return cmd
   }
 
   /*
@@ -63,101 +65,102 @@ var fuzzerWebAnimations = (function() {
   */
   function onFinish()
   {
-    var cmd = [],
-        states = ["pause", "play", "cancel", "finish", "reverse"];
+    let cmd = []
+    let states = ["pause", "play", "cancel", "finish", "reverse"]
 
     if (!o.has("Animation")) {
-      return cmd;
+      return cmd
     }
 
     cmd.push(o.pick("Animation") + "." + "play();")
 
-    for (var i = 0; i < Random.number(states.length * 4); i++) {
-      cmd.push(o.pick("Animation") + "." + Random.pick(states) + "();")
+    for (let i = 0; i < random.number(states.length * 4); i++) {
+      cmd.push(o.pick("Animation") + "." + random.pick(states) + "();")
     }
 
-    return cmd;
+    return cmd
   }
 
   function MakeKeyframeAnimationOptions() {
-    var items = ['duration', 'easing', 'delay', 'iterations', 'direction', 'fill'],
-        attrs = Random.some(items, items.length),
-        o = {};
+    let items = ['duration', 'easing', 'delay', 'iterations', 'direction', 'fill']
+    let attrs = random.subset(items, items.length)
+    let opts = {}
 
-    for (var i = 0; i < attrs.length; i++) {
-      o[attrs[i]] = Random.pick(KeyframeAnimationOptions[attrs[i]]);
+    for (let i = 0; i < attrs.length; i++) {
+      opts[attrs[i]] = random.pick(KeyframeAnimationOptions[attrs[i]])
     }
 
-    return JSON.stringify(o);
+    return utils.common.quote(opts)
   }
 
   function MakeFrames() {
-    var max = Random.range(1, 10), frames = [];
+    let max = random.range(1, 10)
+    let frames = []
 
-    for (var i = 0; i < max; i++) {
-      var attrs = Random.some(Object.keys(Frames), Object.keys(Frames).length),
-          o = {};
+    for (let i = 0; i < max; i++) {
+      let attrs = random.subset(Object.keys(Frames), Object.keys(Frames).length)
+      let opts = {}
 
-      for (var j = 0; j < attrs.length; j++) {
-        o[attrs[j]] = Random.pick(Frames[attrs[j]]);
+      for (let j = 0; j < attrs.length; j++) {
+        opts[attrs[j]] = random.pick(Frames[attrs[j]])
       }
 
-      //o["offset"] = Random.pick([0, 1]);
-      //o["offset"] = parseFloat(Random.range(1,10) / 10).toFixed(2);
-      //o["offset"] = null;
+      //opts["offset"] = random.pick([0, 1]);
+      //opts["offset"] = parseFloat(random.range(1,10) / 10).toFixed(2);
+      //opts["offset"] = null;
 
-      frames.push(o);
+      frames.push(opts)
     }
 
-    return JSON.stringify(frames);
+    return utils.common.quote(frames)
   }
 
   /*
   ** Methods and attributes.
   */
-  var AnimatableMethods = {
+  let AnimatableMethods = {
     "getAnimations": []
-  };
+  }
 
-  var AnimationAttributes = {
-    "startTime": function() { return Make.number(); },
-    "currentTime": function() { return Make.number(); },
-    "playbackRate": function() { return Make.number(); }
-  };
+  let AnimationAttributes = {
+    "startTime": function() { return make.number.any() },
+    "currentTime": function() { return make.number.any() },
+    "playbackRate": function() { return make.number.any() }
+  }
 
-  var Frames = {
-    "transform": function() { return 'scale(' + Make.number() + ')'; },
-    "opacity": function() { return Make.number() },
-    "left": function() { return '' + Make.number() + 'px'; },
+  let Frames = {
+    "transform": function() { return 'scale(' + make.number.any() + ')' },
+    "opacity": function() { return make.number.any() },
+    "left": function() { return '' + make.number.any() + 'px' },
     "color": ['red', 'green', 'blue'],
     "spacing": [
       'distribute',
-      function() { return 'paced(' + Random.choose(['left', 'top', 'transform']) +')'}],
-   "composite": ['replace', 'add', 'accumulate']
-  };
+      function() { return 'paced(' + random.choose(['left', 'top', 'transform']) +')'}],
+    "composite": ['replace', 'add', 'accumulate']
+  }
 
-  var KeyframeAnimationOptions = {
-    "duration": function() { return Make.number(); },
+  let KeyframeAnimationOptions = {
+    "duration": function() { return make.number.any() },
     "easing": [
       'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear',
-      function() { return 'cubic-bezier(' + Make.number() + ',' + Make.number() + ',' + Make.number() + ',' + Make.number() + ')'; },
+      function() { return 'cubic-bezier(' + make.number.any() + ',' + make.number.any() + ',' + make.number.any() + ',' + make.number.any() + ')' },
       'step-start', 'step-middle', 'step-end',
-      function() { return 'steps(' + Make.number() + Random.choose(['start', 'middle', 'end']) + ')'; }
+      function() { return 'steps(' + make.number.any() + random.choose(['start', 'middle', 'end']) + ')' }
     ],
-    "delay": function() { return Make.number(); },
-    "iterations": function() { return Random.pick(['Infinity', Make.number()]); },
+    "delay": function() { return make.number.any() },
+    "iterations": function() { return random.pick(['Infinity', make.number.any()]) },
     "direction": ['alternate', 'normal', 'reverse', 'alternate-reverse'],
-    "fill": ['forwards', 'backwards', 'both', 'none', 'auto'],
-  };
+    "fill": ['forwards', 'backwards', 'both', 'none', 'auto']
+  }
 
-  var Events = {
-    "Animation": ['finished', 'finish', 'cancel'],
-  };
+  let Events = {
+    "Animation": ['finished', 'finish', 'cancel']
+  }
 
   return {
     onInit: onInit,
     makeCommand: makeCommand,
     onFinish: onFinish,
     Events: Events
-  };
-})();
+  }
+})()

@@ -13,19 +13,19 @@ var fuzzerSelection = (function() {
   */
   function onInit()
   {
-    var cmd = [];
+    let cmd = []
 
     // Create dummy object for selected text.
-    cmd.push(o.add("HTMLInputElement") + ' = document.createElement("input");');
-    cmd.push(o.pick("HTMLInputElement") + '.setAttribute("value", ' + Make.quotedString() + ');');
-    cmd.push(JS.addElementToBody(o.pick("HTMLInputElement")));
-    cmd.push('document.querySelector("input").select();');
+    cmd.push(o.add("HTMLInputElement") + ' = document.createElement("input");')
+    cmd.push(o.pick("HTMLInputElement") + '.setAttribute("value", ' + make.text.quotedString() + ');')
+    cmd.push(utils.script.addElementToBody(o.pick("HTMLInputElement")))
+    cmd.push('document.querySelector("input").select();')
 
     // Create Selection object.
-    cmd.push(o.add("Selection") + " = document.getSelection();");
-    cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(0);");
+    cmd.push(o.add("Selection") + " = document.getSelection();")
+    cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(0);")
 
-    return cmd;
+    return cmd
   }
 
   /*
@@ -34,21 +34,19 @@ var fuzzerSelection = (function() {
   */
   function makeCommand()
   {
-    var cmd = [], choice = Random.range(0, 8);
+    let cmd = [], choice = random.range(0, 8)
 
-    cmd.push(JS.methodCall(o.pick("Selection"), SelectionMethods));
+    cmd.push(utils.script.methodCall(o.pick("Selection"), SelectionMethods))
 
     if (choice === 0) {
-      cmd.push(JS.setAttribute(o.pick("Selection"), SelectionAttributes));
+      cmd.push(utils.script.setAttribute(o.pick("Selection"), SelectionAttributes))
     }
 
-    // Pickup new objects.
     if (choice === 4) {
-      cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(" + getRangeNumber() + ");");
+      cmd.push(o.add("Range") + " = " + o.pick("Selection") + ".getRangeAt(" + getRangeNumber() + ");")
     }
 
-
-    return cmd;
+    return cmd
   }
 
   /*
@@ -57,76 +55,82 @@ var fuzzerSelection = (function() {
   */
   function onFinish()
   {
-    var cmd = [];
-    return cmd;
+    return []
   }
 
   // Common Parameters
   function getNode() {
-    return o.pick("Selection") + "." + Random.pick([
+    return o.pick("Selection") + "." + random.pick([
       "anchorNode",
-      "focusNode"]);
+      "focusNode"
+    ])
   }
 
   function getOffset() {
-    return o.pick("Selection") + "." + Random.pick([
+    return o.pick("Selection") + "." + random.pick([
       "anchorOffset",
-      "focusOffset"]);
+      "focusOffset"
+    ]);
   }
 
   function getRangeNumber() {
-    return Random.pick([0, Make.number]);
+    return random.pick([0, make.number.any]);
   }
 
-  var alter = function() { return JSON.stringify(Random.pick([
-    "move",
-    "extend"]));
-  };
-  var direction = function() { return  JSON.stringify(Random.pick([
-    "forward",
-    "backward"]));
-  };
-  var granularity = function() { return  JSON.stringify(Random.pick([
-    "character",
-    "word",
-    "sentence",
-    "line",
-    "paragraph",
-    "lineboundary",
-    "sentenceboundary",
-    "paragraphboundary",
-    "documentboundary"]));
-  };
+  let alter = function() {
+    return utils.common.quote(random.pick([
+      "move",
+      "extend"
+    ]))
+  }
+  let direction = function() {
+    return utils.common.quote(random.pick([
+      "forward",
+      "backward"
+    ]))
+  }
+  let granularity = function() {
+    return utils.common.quote(random.pick([
+      "character",
+      "word",
+      "sentence",
+      "line",
+      "paragraph",
+      "lineboundary",
+      "sentenceboundary",
+      "paragraphboundary",
+      "documentboundary"
+    ]))
+  }
 
   /*
   ** Methods and attributes.
   */
-  var SelectionMethods = {
-    "collapse": [getNode, [getOffset, Make.number]],
+  let SelectionMethods = {
+    "collapse": [getNode, [getOffset, make.number.any]],
     "collapseToStart": [],
     "collapseToEnd": [],
-    "extend": [getNode, [getOffset, Make.number]],
+    "extend": [getNode, [getOffset, make.number.any]],
     "selectAllChildren": [getNode],
     "deleteFromDocument": [],
     "getRangeAt": [getRangeNumber],
-    "addRange": [function() { return o.pick("Range"); }],
-    "removeRange": [function() { return o.pick("Range"); }],
+    "addRange": [function() { return o.pick("Range") }],
+    "removeRange": [function() { return o.pick("Range") }],
     "removeAllRanges": [],
-    "containsNode": [getNode, Make.bool],
-    "modify": [alter, direction, granularity],
-  };
+    "containsNode": [getNode, make.number.bool],
+    "modify": [alter, direction, granularity]
+  }
 
-  var SelectionAttributes = {
-    "caretBidiLevel": Make.number
-  };
+  let SelectionAttributes = {
+    "caretBidiLevel": make.number.any
+  }
 
-  var Events = {
-  };
+  let Events = {}
 
   return {
     onInit: onInit,
     makeCommand: makeCommand,
     onFinish: onFinish,
     Events: Events
-  };
-})();
+  }
+})()

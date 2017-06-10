@@ -16,6 +16,7 @@ def download(url, path):
         os.makedirs(path)
     urlretrieve(url, os.path.join(path, os.path.basename(url)))
 
+
 def install(package):
     pip.main(['install', package, '--upgrade'])
 
@@ -23,7 +24,8 @@ def install(package):
 if __name__ == "__main__":
 
     download('https://raw.githubusercontent.com/mozillasecurity/fuzzdata/master/settings/firefox/prefs.js', 'settings/firefox/')
-    download('https://raw.githubusercontent.com/MozillaSecurity/fuzzdata/master/settings/fxos/user.js', 'settings/fxos/')
     download('https://raw.githubusercontent.com/MozillaSecurity/fuzzdata/master/settings/iexplorer/enable-active-content.reg', 'settings/iexplorer/')
+
+    download('https://mozillasecurity.github.io/octo/octo.js', 'libs/js/')
 
     install("PyYAML==3.12")

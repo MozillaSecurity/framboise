@@ -14,36 +14,37 @@ var fuzzerCanvas2D = (function() {
   */
   function onInit()
   {
-    var cmd = [], params = [];
+    let cmd = []
+    let params = []
 
     if (!o.has("CanvasElement")) {
-      cmd.push(o.add("CanvasElement") + " = document.createElement('canvas');");
-      cmd.push(JS.addElementToBody(o.pick("CanvasElement")));
+      cmd.push(o.add("CanvasElement") + " = document.createElement('canvas');")
+      cmd.push(utils.script.addElementToBody(o.pick("CanvasElement")))
     }
 
     if (!o.has("Canvas2D")) {
-      params = ["'2d'"];
-      if (Random.chance(4)) {
-        params.push(Utils.quote(JS.makeConstraint(["alpha", "willReadFrequently"],[true, false])));
+      params = ["'2d'"]
+      if (random.chance(4)) {
+        params.push(utils.common.quote(utils.script.makeConstraint(["alpha", "willReadFrequently"],[true, false])))
       }
-      cmd.push(o.add("Canvas2D") + " = " + o.pick("CanvasElement") + ".getContext" + JS.methodHead(params) + ";");
+      cmd.push(o.add("Canvas2D") + " = " + o.pick("CanvasElement") + ".getContext" + utils.script.methodHead(params) + ";")
     }
 
     if (!o.has("ImageElement")) {
-      cmd.push(o.add("ImageElement") + " = document.createElement('img');");
-      cmd.push(o.pick("ImageElement") + ".src = " + Make.image() + ";");
+      cmd.push(o.add("ImageElement") + " = document.createElement('img');")
+      cmd.push(o.pick("ImageElement") + ".src = " + make.files.image() + ";")
     }
 
-    if (!o.has("VideoElement") && Random.chance(8)) {
-      cmd.push(o.add("VideoElement") + " = document.createElement('video');");
-      cmd.push(o.pick("VideoElement") + ".src = " + Make.video() + ";");
+    if (!o.has("VideoElement") && random.chance(8)) {
+      cmd.push(o.add("VideoElement") + " = document.createElement('video');")
+      cmd.push(o.pick("VideoElement") + ".src = " + make.files.video() + ";")
     }
 
-    if (!o.has("Path2D") && Random.chance(4)) {
-        cmd.push(o.add("Path2D") + " = " + _Path2D());
+    if (!o.has("Path2D") && random.chance(4)) {
+        cmd.push(o.add("Path2D") + " = " + _Path2D())
     }
 
-    return cmd;
+    return cmd
   }
 
   /*
@@ -52,43 +53,43 @@ var fuzzerCanvas2D = (function() {
   */
   function makeCommand()
   {
-    if (o.has("Canvas2D") && Random.chance(8)) {
-      return JS.setAttribute(o.pick("Canvas2D"), Canvas2DAttributes);
+    if (o.has("Canvas2D") && random.chance(8)) {
+      return utils.script.setAttribute(o.pick("Canvas2D"), Canvas2DAttributes)
     }
 
-    if (Random.chance(4)) {
-      return _DrawImage();
+    if (random.chance(4)) {
+      return _DrawImage()
     }
 
-    if (!o.has("ImageData") || Random.chance(32)) {
-      return _ImageData();
+    if (!o.has("ImageData") || random.chance(32)) {
+      return _ImageData()
     }
 
-    if (Random.chance(16) && o.has("ImageData")) {
-      return _putImageData();
+    if (random.chance(16) && o.has("ImageData")) {
+      return _putImageData()
     }
 
-    if (!o.has("CanvasGradient") || Random.chance(32)) {
-      return _CanvasGradient();
+    if (!o.has("CanvasGradient") || random.chance(32)) {
+      return _CanvasGradient()
     }
 
-    if (!o.has("CanvasPattern") && Random.chance(32)) {
-      return _CanvasPattern();
+    if (!o.has("CanvasPattern") && random.chance(32)) {
+      return _CanvasPattern()
     }
 
-    if (o.has("CanvasElement") && Random.chance(16)) {
-      return JS.setAttribute(o.pick("CanvasElement"), Canvas2DElementAttributes);
+    if (o.has("CanvasElement") && random.chance(16)) {
+      return utils.script.setAttribute(o.pick("CanvasElement"), Canvas2DElementAttributes)
     }
 
-    if (o.has("CanvasGradient") && Random.chance(16)) {
-      return JS.methodCall(o.pick("CanvasGradient"), CanvasGradientMethods);
+    if (o.has("CanvasGradient") && random.chance(16)) {
+      return utils.script.methodCall(o.pick("CanvasGradient"), CanvasGradientMethods)
     }
 
-    if (!o.has("HitRegion") || Random.chance(4)) {
-        return o.add("HitRegion") + " = " + _HitRegionOptions();
+    if (!o.has("HitRegion") || random.chance(4)) {
+        return o.add("HitRegion") + " = " + _HitRegionOptions()
     }
 
-    return JS.methodCall(o.pick("Canvas2D"), Canvas2DMethods);
+    return utils.script.methodCall(o.pick("Canvas2D"), Canvas2DMethods)
   }
 
   /*
@@ -97,17 +98,20 @@ var fuzzerCanvas2D = (function() {
   */
   function onFinish()
   {
-    var choice = Random.range(0, 4);
-    if (choice == 0) {
-      return o.pick("CanvasElement") + ".toDataURL" + JS.methodHead([Utils.quote(Make.mimeType())]);
+    let choice = random.number(0, 4)
+
+    if (choice === 0) {
+      return o.pick("CanvasElement") + ".toDataURL" + utils.script.methodHead([utils.common.quote(make.mime.any())])
     }
-    if (Platform.isMozilla && choice == 1) {
-      var args = ["function() {}", Utils.quote(Make.mimeType()), Make.number];
-      return o.pick("CanvasElement") + ".toBlob" + JS.methodHead(args);
+
+    if (choice === 1 && utils.platform.isMozilla) {
+      let args = ["function() {}", utils.common.quote(make.mimeType()), make.number.any]
+      return o.pick("CanvasElement") + ".toBlob" + utils.script.methodHead(args)
     }
-    if (Platform.isMozilla && choice == 2) {
-      var args = [Utils.quote(Make.image())];
-      return o.pick("CanvasElement") + ".mozGetAsFile" + JS.methodHead(args);
+
+    if (choice === 2 && utils.platform.isMozilla) {
+      let args = [utils.common.quote(make.image())]
+      return o.pick("CanvasElement") + ".mozGetAsFile" + utils.script.methodHead(args)
     }
   }
 
@@ -116,66 +120,78 @@ var fuzzerCanvas2D = (function() {
   */
   function _CanvasGradient() {
     // Firefox defines an overloaded function with 4 parameters but throws an error?
-    return o.add("CanvasGradient") + " = " + o.pick("Canvas2D") + ".createRadialGradient" + JS.methodHead(
-      [Make.number, Make.number, Make.number, Make.number, Make.number, Make.number]);
+    return o.add("CanvasGradient") + " = " + o.pick("Canvas2D") + ".createRadialGradient" + utils.script.methodHead(
+      [make.number.any, make.number.any, make.number.any, make.number.any, make.number.any, make.number.any])
   }
+
 
   function _CanvasPattern() {
-    var params = [o.pick("CanvasElement"), ["'repeat'", "'repeat-x'", "'repeat-y'", "'no-repeat'"]];
-    return o.add("CanvasPattern") + " = " + o.pick("Canvas2D") + ".createPattern" + JS.methodHead(params);
+    let params = [o.pick("CanvasElement"), ["'repeat'", "'repeat-x'", "'repeat-y'", "'no-repeat'"]]
+    return o.add("CanvasPattern") + " = " + o.pick("Canvas2D") + ".createPattern" + utils.script.methodHead(params)
   }
+
 
   function _ImageData() {
-    var params;
-    var choice = Random.number(6);
-    if (choice == 0) {
-      params = [Make.number, Make.number, Make.number, Make.number];
-      return o.add("ImageData")  + " = " + o.pick("Canvas2D") + ".getImageData" + JS.methodHead(params);
+    let params
+    let choice = random.number(6)
+
+    if (choice === 0) {
+      params = [make.number.any, make.number.any, make.number.any, make.number.any]
+      return o.add("ImageData")  + " = " + o.pick("Canvas2D") + ".getImageData" + utils.script.methodHead(params)
     }
-    if (choice == 1 && o.has("ImageData")) {
-      params = [o.pick("ImageData")];
-      return o.add("ImageData") + " = " + o.pick("Canvas2D") + ".createImageData" + JS.methodHead(params);
+
+    if (choice === 1 && o.has("ImageData")) {
+      params = [o.pick("ImageData")]
+      return o.add("ImageData") + " = " + o.pick("Canvas2D") + ".createImageData" + utils.script.methodHead(params)
     }
-    params = [Make.number, Make.number];
-    return o.add("ImageData") + " = " + o.pick("Canvas2D") + ".createImageData" + JS.methodHead(params);
+
+    params = [make.number.any, make.number.any]
+    return o.add("ImageData") + " = " + o.pick("Canvas2D") + ".createImageData" + utils.script.methodHead(params)
   }
 
+
   function _DrawImage() {
-    var params,
-        elementName = o.pick(Random.pick(o.contains(["CanvasElement", "ImageElement", "VideoElement"])));
-    if (Platform.isChrome && Random.chance(4)) {
-      params = Random.choose([
-        [1, [elementName].concat(Random.some([Make.number, Make.number, Make.number, Make.number, Make.number, Make.number, Make.number, Make.number]))]
-      ], true);
-      return o.pick("Canvas2D") + ".drawImageFromRect" + JS.methodHead(params);
+    let params
+    let elementName = o.pick(random.pick(o.contains(["CanvasElement", "ImageElement", "VideoElement"])))
+
+    if (utils.platform.isChrome && random.chance(4)) {
+      params = random.choose([
+        [1, [elementName].concat(random.some([make.number.any, make.number.any, make.number.any, make.number.any, make.number.any, make.number.any, make.number.any, make.number.any]))]
+      ], true)
+      return o.pick("Canvas2D") + ".drawImageFromRect" + utils.script.methodHead(params)
     }
-    params = Random.choose([
-      [1, [elementName, Make.number(), Make.number()]],
-      [1, [elementName, Make.number(), Make.number(), Make.number(), Make.number()]],
-      [1, [elementName, Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]]
-      ], true);
-    return o.pick("Canvas2D") + ".drawImage" + JS.methodHead(params);
+
+    params = random.choose([
+      [1, [elementName, make.number.any(), make.number.any()]],
+      [1, [elementName, make.number.any(), make.number.any(), make.number.any(), make.number.any()]],
+      [1, [elementName, make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]]
+      ], true)
+
+    return o.pick("Canvas2D") + ".drawImage" + utils.script.methodHead(params)
   }
 
   function _putImageData() {
-    var params;
-    if (Platform.isChrome && Random.chance(4)) {
-      params = Random.choose([
-        [1, [o.pick("ImageData"), Make.number(), Make.number()]],
-        [1, [o.pick("ImageData"), Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]]
-      ], true);
-      return o.pick("Canvas2D") + ".webkitPutImageDataHD" + JS.methodHead(params);
+    let params
+
+    if (utils.platform.isChrome && random.chance(4)) {
+      params = random.choose([
+        [1, [o.pick("ImageData"), make.number.any(), make.number.any()]],
+        [1, [o.pick("ImageData"), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]]
+      ], true)
+      return o.pick("Canvas2D") + ".webkitPutImageDataHD" + utils.script.methodHead(params)
     }
-    params = Random.choose([
-      [1, [o.pick("ImageData"), Make.number(), Make.number()]],
-      [1, [o.pick("ImageData"), Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]]
-    ], true);
-    return o.pick("Canvas2D") + ".putImageData" + JS.methodHead(params);
+
+    params = random.choose([
+      [1, [o.pick("ImageData"), make.number.any(), make.number.any()]],
+      [1, [o.pick("ImageData"), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]]
+    ], true)
+
+    return o.pick("Canvas2D") + ".putImageData" + utils.script.methodHead(params)
   }
 
   function make_path_data() {
       // Todo: http://www.w3.org/TR/SVGTiny12/paths.html#PathDataBNF
-      return "M100,0L200,0L200,100L100,100z";
+      return "M100,0L200,0L200,100L100,100z"
   }
 
   function _Path2D() {
@@ -183,207 +199,199 @@ var fuzzerCanvas2D = (function() {
   }
 
   function _HitRegionOptions() {
-    var opts = {};
-    opts["id"] = "region" + o.count("HitRegion");
-    opts["control"] = Random.pick([null]);
-    return Utils.quote(opts);
+    let opts = {}
+    opts["id"] = "region" + o.count("HitRegion")
+    opts["control"] = random.pick([null])
+    return utils.common.quote(opts)
   }
 
   /*
   ** Methods and attributes.
   */
-  var Canvas2DElementAttributes = {
-    "width": [Make.number],
-    "height": [Make.number]
-  };
-  if (Platform.isMozilla) {
-    Utils.mergeHash(Canvas2DElementAttributes, {
-      "mozOpaque": [Make.bool]
-    });
+  let Canvas2DElementAttributes = {
+    "width": [make.number.any],
+    "height": [make.number.any]
+  }
+  if (utils.platform.isMozilla) {
+    utils.common.mergeHash(Canvas2DElementAttributes, {
+      "mozOpaque": [make.number.bool]
+    })
   }
 
-  var CanvasWindingRule = ["'nonzero'", "'evenodd'"];
+  let CanvasWindingRule = ["'nonzero'", "'evenodd'"]
 
-  var Canvas2DAttributes = {
-    "globalAlpha": [Make.number],
+  let Canvas2DAttributes = {
+    "globalAlpha": [make.number.any],
     "globalCompositeOperation": ["'source-atop'", "'source-in'", "'source-out'", "'source-over'", "'destination-atop'",
       "'destination-in'", "'destination-out'", "'destination-over'", "'lighter'", "'copy'", "'exclusion'"],
-    "strokeStyle": [Make.color],
-    "fillStyle": [Make.color],
-    "shadowOffsetX": [Make.number],
-    "shadowOffsetY": [Make.number],
-    "shadowBlur": [Make.number],
-    "shadowColor": [Make.color],
-    "lineWidth": [1, Make.number],
+    "strokeStyle": [function() { return utils.common.quote(make.colors.any) }],
+    "fillStyle": [function() { return utils.common.quote(make.colors.any) }],
+    "shadowOffsetX": [make.number.any],
+    "shadowOffsetY": [make.number.any],
+    "shadowBlur": [make.number.any],
+    "shadowColor": [function() { return utils.common.quote(make.colors.any) }],
+    "lineWidth": [1, make.number.any],
     "lineCap": ["'butt'", "'round'", "'square'"],
     "lineJoin": ["'round'", "'bevel'", "'miter'"],
-    "miterLimit": [10, Make.number],
-    "font": [Make.font],
+    "miterLimit": [10, make.number.any],
+    "font": [make.font.font],
     "textAlign": ["'start'", "'end'", "'left'", "'right'", "'center'"],
     "textBaseline": ["'top'", "'hanging'", "'middle'", "'alphabetic'", "'ideographic'", "'bottom'"]
-  };
-  if (Platform.isMozilla) {
-    Utils.mergeHash(Canvas2DAttributes, {
-      "mozImageSmoothingEnabled": [Make.bool],
-      "mozDashOffset": [Make.number],
-      /*"mozDash": [function() { // Bug: 899517
-        return Utils.quote(Make.filledArray(function() { return Random.pick([0,1]); }, Random.range(0, 32)))}
-      ],*/
+  }
+  if (utils.platform.isMozilla) {
+    utils.common.mergeHash(Canvas2DAttributes, {
+      "mozImageSmoothingEnabled": [make.number.bool],
+      "mozDashOffset": [make.number.any],
+      "mozDash": [function() { // Bug: 899517
+        return utils.common.quote(make.arrays.filledArray(function() { return random.pick([0,1]) }, random.range(0, 32)))}
+      ],
       "mozFillRule": [CanvasWindingRule],
       "mozCurrentTransform": [function() {
-        return Utils.quote(Make.filledArray(function() { return Random.pick([Make.number]); }, 6)) }
+        return utils.common.quote(make.arrays.filledArray(function() { return random.pick([make.number.any]) }, 6)) }
       ],
       "mozCurrentTransformInverse": [function() {
-        return Utils.quote(Make.filledArray(function() { return Random.pick([Make.number]); }, 6)) }
+        return utils.common.quote(make.arrays.filledArray(function() { return random.pick([make.number.any]) }, 6)) }
       ]
-    });
+    })
   }
-  if (Platform.isChrome) {
-    Utils.mergeHash(Canvas2DAttributes, {
-      "webkitImageSmoothingEnabled": [Make.bool],
-      "lineDashOffset": [Make.number]
-    });
+  if (utils.platform.isChrome) {
+    utils.common.mergeHash(Canvas2DAttributes, {
+      "webkitImageSmoothingEnabled": [make.number.bool],
+      "lineDashOffset": [make.number.any]
+    })
   }
 
-  var Canvas2DMethods = {
+  let Canvas2DMethods = {
     "save": [],
     "restore": [],
-    "scale": [Make.number, Make.number],
-    "rotate": [Make.number],
-    "translate": [Make.number, Make.number],
-    "transform": [Make.number, Make.number, Make.number, Make.number, Make.number, Make.number],
-    "setTransform": [Make.number, Make.number, Make.number, Make.number, Make.number, Make.number],
-    "clearRect": [Make.number, Make.number, Make.number, Make.number],
-    "fillRect": [Make.number, Make.number, Make.number, Make.number],
-    //"strokeRect": [Make.number, Make.number, Make.number, Make.number], // Bug: 899517
+    "scale": [make.number.any, make.number.any],
+    "rotate": [make.number.any],
+    "translate": [make.number.any, make.number.any],
+    "transform": [make.number.any, make.number.any, make.number.any, make.number.any, make.number.any, make.number.any],
+    "setTransform": [make.number.any, make.number.any, make.number.any, make.number.any, make.number.any, make.number.any],
+    "clearRect": [make.number.any, make.number.any, make.number.any, make.number.any],
+    "fillRect": [make.number.any, make.number.any, make.number.any, make.number.any],
+    "strokeRect": [make.number.any, make.number.any, make.number.any, make.number.any], // Bug: 899517
     "beginPath": [],
     "fill": [function() { return o.has("Path2D") ? o.pick("Path2D") : _Path2D() }, CanvasWindingRule],
-    //"stroke": [], // Bug: 899517
-    //"stroke": [function() { return o.has("Path2D") ? o.pick("Path2D") : _Path2D() }],
+    "stroke": [function() { return o.has("Path2D") ? o.pick("Path2D") : _Path2D() }],
     "clip": [function() { return o.has("Path2D") ? o.pick("Path2D") : _Path2D() }, CanvasWindingRule],
-    "isPointInPath": [function() { return o.has("Path2D") ? o.pick("Path2D") : _Path2D() }, Make.number, Make.number, CanvasWindingRule],
+    "isPointInPath": [function() { return o.has("Path2D") ? o.pick("Path2D") : _Path2D() }, make.number.any, make.number.any, CanvasWindingRule],
     "isPointInStroke": [
       function() { return o.has("Path2D") ? o.pick("Path2D") : _Path2D() },
-      function() { return Random.choose([
-        [20, Make.tinyNumber],
-        [ 1, Make.number]
+      function() { return random.choose([
+        [ 1, make.number.any]
        ])},
-      function () { return Random.choose([
-        [20, Make.tinyNumber],
-        [ 1, Make.number]
+      function () { return random.choose([
+        [ 1, make.number.any]
       ])}
     ],
     "fillText": [function() {
-        return Random.choose([
-          [1, [Make.quotedString(), Make.number(), Make.number()]],
-          [1, [Make.quotedString(), Make.number(), Make.number(), Make.number()]]
-        ], true);
-      },
+        return random.choose([
+          [1, [make.text.quotedString(), make.number.any(), make.number.any()]],
+          [1, [make.text.quotedString(), make.number.any(), make.number.any(), make.number.any()]]
+        ], true)
+      }
     ],
     "strokeText":  [function() {
-        return Random.choose([
-          [1, [Make.quotedString(), Make.number(), Make.number()]],
-          [1, [Make.quotedString(), Make.number(), Make.number(), Make.number()]]
-        ], true);
-      },
+        return random.choose([
+          [1, [make.text.quotedString(), make.number.any(), make.number.any()]],
+          [1, [make.text.quotedString(), make.number.any(), make.number.any(), make.number.any()]]
+        ], true)
+      }
     ],
-    "measureText": [Make.quotedString],
+    "measureText": [make.text.quotedString],
     "closePath": [],
-    "moveTo": [Make.number, Make.number],
-    "lineTo": [Make.number, Make.number],
-    "quadraticCurveTo": [Make.number, Make.number, Make.number, Make.number],
-    "bezierCurveTo": [Make.number, Make.number, Make.number, Make.number, Make.number, Make.number],
-    "rect": [Make.number, Make.number, Make.number, Make.number],
-    "arcTo": [Make.number, Make.number, Make.number, Make.number, Make.number],
+    "moveTo": [make.number.any, make.number.any],
+    "lineTo": [make.number.any, make.number.any],
+    "quadraticCurveTo": [make.number.any, make.number.any, make.number.any, make.number.any],
+    "bezierCurveTo": [make.number.any, make.number.any, make.number.any, make.number.any, make.number.any, make.number.any],
+    "rect": [make.number.any, make.number.any, make.number.any, make.number.any],
+    "arcTo": [make.number.any, make.number.any, make.number.any, make.number.any, make.number.any],
     "arc": [
-      function() { return Random.choose([
-        [20, Make.tinyNumber],
-        [ 1, Make.number]
+      function() { return random.choose([
+        [ 1, make.number.any]
       ])},
-      function() { return Random.choose([
-        [20, Make.tinyNumber],
-        [ 1, Make.number]
+      function() { return random.choose([
+        [ 1, make.number.any]
       ])},
-      function () { return Random.choose([
-        [20, Make.tinyNumber],
-        [ 1, Make.number]
+      function () { return random.choose([
+        [ 1, make.number.any]
       ])},
-      function () { return Random.choose([
-        [20, Make.tinyNumber],
-        [ 1, Make.number]
+      function () { return random.choose([
+        [ 1, make.number.any]
       ])},
-      function () { return Random.choose([
-        [20, Make.tinyNumber],
-        [ 1, Make.number]
+      function () { return random.choose([
+        [ 1, make.number.any]
        ])},
-       Make.bool
+       make.bool
     ],
     "addHitRegion": [function() { return o.has("HitRegion") ? o.pick("HitRegion") : _HitRegionOptions() }],
-    "removeHitRegion": [function() { return "'region" + Random.number(o.count("HitRegion")) + "'" }],
-    "drawFocusIfNeeded": [[JS.getRandomElement, "document.activeElement"]],
-    "drawCustomFocusRing": [[JS.getRandomElement, "document.activeElement"]]
-  };
-  if (Platform.isCrome) {
-    Utils.mergeHash(Canvas2DMethods, {
+    "removeHitRegion": [function() { return "'region" + random.number(o.count("HitRegion")) + "'" }],
+    "drawFocusIfNeeded": [[utils.script.getRandomElement, "document.activeElement"]],
+    "drawCustomFocusRing": [[utils.script.getRandomElement, "document.activeElement"]]
+  }
+  if (utils.platform.isCrome) {
+    utils.common.mergeHash(Canvas2DMethods, {
       "createLinearGradient": [function() {
-          return Random.choose([
-            [1, [Make.number(), Make.number(), Make.number(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]]
-          ], true);
+          return random.choose([
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]]
+          ], true)
         }
       ],
-      "setAlpha": [Make.number],
+      "setAlpha": [make.number.any],
       "setCompositeOperation": ["'source-atop'", "'source-in'", "'source-out'", "'source-over'", "'destination-atop'",
         "'destination-in'", "'destination-out'", "'destination-over'", "'lighter'", "'copy'", "'exclusion'"],
       "getLineDash": [],
       "setLineDash": [function () {
-        return Utils.quote(Make.filledArray(function () { return Random.pick([0, 1]); }, Random.range(0, 32)))}
+        return utils.common.quote(make.filledArray(function () { return random.pick([0, 1]) }, random.range(0, 32)))}
       ],
-      "setLineWidth": [Make.number],
+      "setLineWidth": [make.number.any],
       "setLineCap": ["'butt'", "'round'", "'square'"],
       "setLineJoin": ["'round'", "'bevel'", "'miter'"],
-      "setMiterLine": [Make.number],
+      "setMiterLine": [make.number.any],
       "setStrokeColor": [function() {
-          return Random.choose([
-            [1, [Make.color(), Make.number()]],
-            [1, [Make.number(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]]
-          ], true);
+          return random.choose([
+            [1, [make.color(), make.number.any()]],
+            [1, [make.number.any(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]]
+          ], true)
         }
       ],
       "setFillColor": [function () {
-          return Random.choose([
-            [1, [Make.color(), Make.number()]],
-            [1, [Make.number(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]]
-          ], true);
+          return random.choose([
+            [1, [make.color(), make.number.any()]],
+            [1, [make.number.any(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]]
+          ], true)
         }
       ],
-      "strokeRect": [Make.number, Make.number, Make.number, Make.number],
+      "strokeRect": [make.number.any, make.number.any, make.number.any, make.number.any],
       "clearShadow": [],
       "setShadow": [function() {
-          return Random.choose([
-            [1, [Make.number(), Make.number(), Make.number(), Make.color(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]],
-            [1, [Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number(), Make.number()]]
-          ], true);
+          return random.choose([
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.color(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]],
+            [1, [make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any(), make.number.any()]]
+          ], true)
         }
       ],
-      "webkitGetImageDataHD": [Make.number, Make.number, Make.number, Make.number],
+      "webkitGetImageDataHD": [make.number.any, make.number.any, make.number.any, make.number.any],
       "getContextAttributes": []
-    });
+    })
   }
 
-  var CanvasGradientMethods = {
-    "addColorStop": [[0.0, 1.0, Make.float], Make.color]
-  };
+  let CanvasGradientMethods = {
+    "addColorStop": [[0.0, 1.0, make.number.float], function() { return utils.common.quote(make.colors.rgb()) }]
+  }
 
   return {
     onInit: onInit,
     makeCommand: makeCommand,
     onFinish: onFinish
-  };
-})();
+  }
+})()
