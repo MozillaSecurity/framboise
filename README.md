@@ -1,24 +1,13 @@
-# Framboise
-
-![](http://people.mozilla.com/~cdiehl/img/framboise.jpg)
+![Logo](http://people.mozilla.com/~cdiehl/img/framboise.png)
 
 
-## Setup for macOS and Linux
+## Setup for MacOS and Linux
 
 ```bash
-# Clone this repositroy.
-git clone https://github.com/MozillaSecurity/framboise.git
-
-# Open the directory of the checkout of this repository.
+git clone https://github.com/mozillasecurity/framboise.git
 cd framboise
-
-# Install `pip` if not already installed.
-sudo easy_install pip
-
-# Run setup script.
 ./setup.py
 ```
-
 
 ## Setup for Windows
 
@@ -37,8 +26,77 @@ sudo easy_install pip
     * Change **User Account Control** settings
     * Set to **Never Notify**
 
-Edit `settings/framboise-{platform}.yaml` with your own paths to the target applications.
+5. Edit `settings/framboise-{platform}.yaml` with your own paths to the target applications.
 
+
+## Sample Module 
+
+```javascript
+/*
+ * XyzAPI References
+ *
+ * WebIDL:
+ * Specification:
+ *
+**/
+
+var fuzzerXyz = (function() {
+  /*
+  ** Initialization
+  ** Commands which shall be called at the beginning of a testcase.
+  */
+  function onInit()
+  {
+    let cmd = []
+
+    return cmd
+  }
+
+  /*
+  ** Main
+  ** Command which shall be called after initialization.
+  */
+  function makeCommand()
+  {
+    let cmd = []
+
+    return cmd
+  }
+
+  /*
+  ** De-initialization.
+  ** Commands which shall be called at the end of a testcase.
+  */
+  function onFinish()
+  {
+    let cmd = []
+
+    return cmd
+  }
+
+  /*
+  ** Methods and attributes.
+  */
+  let ObjectMethods = {
+    'name': ['a', function() { return 'and_b' }, make.number.any]
+  }
+
+  let ObjectAttributes = {
+    'name': ['a', 'or_b', 'or_c']
+  }
+
+  let Events = {
+    'object_name': ['name']
+  }
+
+  return {
+    onInit: onInit,
+    makeCommand: makeCommand,
+    onFinish: onFinish,
+    Events: Events
+  }
+})()
+```
 
 ## Usage Examples
 
@@ -66,6 +124,11 @@ Run a testcase against the target:
 
 ```bash
 ./framboise.py -testcase ~/path/to/testcase.html
+```
+
+Simply launch the target:
+```bash
+./framboise.py -launch
 ```
 
 

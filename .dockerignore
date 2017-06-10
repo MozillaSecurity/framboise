@@ -1,0 +1,6 @@
+*.md
+.git
+Dockerfile
+.DS_Store
+.dockerignore
+.idea
