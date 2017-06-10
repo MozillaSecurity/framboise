@@ -33,6 +33,12 @@ cd framboise/framboise
 5. Edit `settings/framboise-{platform}.yaml` with your own paths to the target applications.
 
 
+## Run in Docker
+```bash
+docker run -e FUZZER_MAX_RUNTIME=600 -it --rm posidron/framboise:latest ./framboise.py -settings settings/framboise.linux.docker.yaml -fuzzer 1:Canvas2D -debug -restart
+```
+
+
 ## Sample Module 
 
 ```javascript
