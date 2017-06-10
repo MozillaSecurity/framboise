@@ -5,6 +5,12 @@
 [![IRC](https://img.shields.io/badge/IRC-%23fuzzing-1e72ff.svg?style=flat)](https://www.irccloud.com/invite?channel=%23fuzzing&amp;hostname=irc.mozilla.org&amp;port=6697&amp;ssl=1)
 
 
+### Run in Docker
+```bash
+docker run -e FUZZER_MAX_RUNTIME=600 -it --rm posidron/framboise:latest ./framboise.py -settings settings/framboise.linux.docker.yaml -fuzzer 1:Canvas2D -debug -restart
+```
+
+
 ### Setup for MacOS and Linux
 
 ```bash
@@ -31,12 +37,6 @@ cd framboise/framboise
     * Set to **Never Notify**
 
 5. Edit `settings/framboise-{platform}.yaml` with your own paths to the target applications.
-
-
-### Run in Docker
-```bash
-docker run -e FUZZER_MAX_RUNTIME=600 -it --rm posidron/framboise:latest ./framboise.py -settings settings/framboise.linux.docker.yaml -fuzzer 1:Canvas2D -debug -restart
-```
 
 
 ### Sample Module 
