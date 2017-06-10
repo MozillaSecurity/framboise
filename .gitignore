@@ -77,5 +77,6 @@ framboise/modules/WebPayment/
 framboise/modules/WebSpeech/
 framboise/modules/WebVR/
 framboise/modules/WebRTC/
+
 framboise/settings/firefox
 framboise/settings/iexplorer

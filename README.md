@@ -1,11 +1,15 @@
 ![Logo](http://people.mozilla.com/~cdiehl/img/framboise.png)
 
 
+[![Current Release](https://img.shields.io/github/release/mozillasecurity/framboise.svg)](https://img.shields.io/github/release/mozillasecurity/framboise.svg)
+[![IRC](https://img.shields.io/badge/IRC-%23fuzzing-1e72ff.svg?style=flat)](https://www.irccloud.com/invite?channel=%23fuzzing&amp;hostname=irc.mozilla.org&amp;port=6697&amp;ssl=1)
+
+
 ## Setup for MacOS and Linux
 
 ```bash
 git clone https://github.com/mozillasecurity/framboise.git
-cd framboise
+cd framboise/framboise
 ./setup.py
 ```
 
@@ -17,7 +21,7 @@ cd framboise
 
     ```bash
     git clone https://github.com/MozillaSecurity/framboise.git
-    cd framboise
+    cd framboise/framboise
     python get-pip.py
     ./setup.py
     ```
