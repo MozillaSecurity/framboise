@@ -5,7 +5,7 @@
 [![IRC](https://img.shields.io/badge/IRC-%23fuzzing-1e72ff.svg?style=flat)](https://www.irccloud.com/invite?channel=%23fuzzing&amp;hostname=irc.mozilla.org&amp;port=6697&amp;ssl=1)
 
 
-## Setup for MacOS and Linux
+### Setup for MacOS and Linux
 
 ```bash
 git clone https://github.com/mozillasecurity/framboise.git
@@ -13,7 +13,7 @@ cd framboise/framboise
 ./setup.py
 ```
 
-## Setup for Windows
+### Setup for Windows
 
 1. Ensure [Python](https://www.python.org/downloads/windows/) is installed.
 2. Download the [pip](https://bootstrap.pypa.io/get-pip.py) package manager.
@@ -33,13 +33,13 @@ cd framboise/framboise
 5. Edit `settings/framboise-{platform}.yaml` with your own paths to the target applications.
 
 
-## Run in Docker
+### Run in Docker
 ```bash
 docker run -e FUZZER_MAX_RUNTIME=600 -it --rm posidron/framboise:latest ./framboise.py -settings settings/framboise.linux.docker.yaml -fuzzer 1:Canvas2D -debug -restart
 ```
 
 
-## Sample Module 
+### Sample Module 
 
 ```javascript
 /*
@@ -108,7 +108,7 @@ var fuzzerXyz = (function() {
 })()
 ```
 
-## Usage Examples
+### Usage Examples
 
 The default target is set to Firefox, and the settings file points to `settings/framboise.yaml`; therefore both flags are omitted in the following examples.
 
@@ -142,7 +142,7 @@ Simply launch the target:
 ```
 
 
-## Help Menu
+### Help Menu
 
 ```
 usage: framboise.py [-h] [-fuzzer list] [-target name] [-setup name]
