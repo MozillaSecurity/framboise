@@ -1,4 +1,4 @@
-FROM posidron/fuzzos:latest
+FROM taskclusterprivate/fuzzos:latest
 
 LABEL maintainer Christoph Diehl <cdiehl@mozilla.com>
 

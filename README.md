@@ -7,7 +7,8 @@
 
 ### Run in Docker
 ```bash
-docker run -e FUZZER_MAX_RUNTIME=600 -it --rm posidron/framboise:latest ./framboise.py -settings settings/framboise.linux.docker.yaml -fuzzer 1:Canvas2D -debug -restart
+docker run -e FUZZER_MAX_RUNTIME=600 -it --rm taskclusterprivate/framboise:latest ./framboise.py -settings settings/framboise.linux.docker.yaml -fuzzer 
+1:Canvas2D -debug -restart
 ```
 
 
