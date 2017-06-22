@@ -46,7 +46,7 @@ var fuzzerWebAudio = (function() {
 
   let makeBufferLength = [function() {
     return random.choose([
-      [30, make.number.tinyNumber],
+      [30, make.number.tiny],
       [ 5, random.number(65535)],
     ])
   }]
