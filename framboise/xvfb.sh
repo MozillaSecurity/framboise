@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 cd $HOME
 
-python fuzzfetch/fetch.py -o $HOME -n firefox -a
+fuzzfetch -o $HOME -n firefox -a --fuzzing
 
 cd framboise
 xvfb-run -s '-screen 0 1024x768x24' $@ &
