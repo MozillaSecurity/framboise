@@ -91,8 +91,9 @@ class TestcaseListener(Listener):
     def process_line(self, line):
         if line.find('NEXT TESTCASE') != -1:
             self.testcase = []
-        if line.startswith('/*L*/'):
-            self.testcase.append(json.loads(line[5:]))
+        if line.startswith('/*L*/ '):
+            #self.testcase.append(json.loads(line[5:]))
+            self.testcase.append(line[5:])
 
     def detected_fault(self):
         return True

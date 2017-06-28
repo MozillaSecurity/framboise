@@ -34,8 +34,6 @@ class Framboise {
 
     engine.prefs.commands.events = this.parseParm('with-events', argv, this.parseBoolean)
 
-    window.debug = this.parseParm('debug', argv, this.parseBoolean)
-
     value = this.parseParm('ws-logger', argv, parseInt)
     if (value) {
       websocket = new WebSocket('ws://localhost:' + value + '/')
@@ -161,7 +159,6 @@ class Engine {
       reloadTimeout: 0,
       maxCommands: 30,
       commands: {
-        trycatch: true,
         settimeout: true,
         setinterval: true,
         forcegc: false,
@@ -173,11 +170,8 @@ class Engine {
   initialize() {
     o = new Objects() /* global */
     logger.separator()
-    logger.testcase(logger.comment('Date: ' + new Date()))
-    logger.testcase(logger.comment('Seed: ' + random.seed))
-    if (window.debug) {
-      logger.testcase('logger={}; logger.JSError=e=>{};')
-    }
+    logger.info('Date: ' + new Date())
+    logger.info('Seed: ' + random.seed)
   }
 
   onInit(fuzzers) {
@@ -290,19 +284,20 @@ class Engine {
     this.makeCommands(fuzzers)
     this.onFinish(fuzzers)
     fuzz_content_sink('setTimeout(\'window.location.reload()\', ' + this.prefs.reloadTimeout + ')', this.prefs)
-    logger.dumpln(logger.comment('### END OF TESTCASE'))
+    logger.comment('### END OF TESTCASE')
   }
 }
 
 
 function fuzz_content_sink(cmd, prefs) {
-  if (prefs.commands.trycatch) {
-    cmd = utils.script.safely(cmd)
+  try {
+    logger.log(cmd)
+    eval(cmd)
+  } catch (e) {
+      //logger.info("ERROR: " + e)
+    logger.JSError(e)
   }
 
-  logger.testcase(cmd)
-
-  eval(cmd)
 }
 
 
