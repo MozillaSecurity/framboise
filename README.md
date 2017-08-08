@@ -1,4 +1,4 @@
-![Logo](http://people.mozilla.com/~cdiehl/img/framboise.png)
+![Logo](https://github.com/posidron/posidron.github.io/raw/master/static/images/framboise.png)
 
 
 [![Current Release](https://img.shields.io/github/release/mozillasecurity/framboise.svg)](https://img.shields.io/github/release/mozillasecurity/framboise.svg)
